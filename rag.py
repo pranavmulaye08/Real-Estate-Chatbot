@@ -1,3 +1,15 @@
+import os
+import sys
+import streamlit as st
+
+# Force Python to use pysqlite3 instead of old sqlite3
+try:
+    import pysqlite3
+    sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
+except ImportError:
+    pass  # pysqlite3 not installed, fallback to default
+
+
 from uuid import uuid4
 
 from dotenv import load_dotenv
@@ -10,13 +22,6 @@ from langchain_groq import ChatGroq
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from huggingface_hub import login
 import os
-import streamlit as st
-# Force Python to use pysqlite3 instead of old sqlite3
-try:
-    import pysqlite3
-    sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
-except ImportError:
-    pass  # pysqlite3 not installed, fallback to default
 
 
 load_dotenv()
@@ -25,7 +30,8 @@ CHUNK_SIZE=1000
 EMBEDDING_MODEL="Alibaba-NLP/gte-base-en-v1.5"
 VECTOR_STORE_DIR=Path(__file__).parent/"resources/vector_store"
 COLLECTION_NAME="real_estate"
-hf_token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+# hf_token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+hf_token = os.getenv("HUGGINGFACEHUB_API_TOKEN") or st.secrets.get("HUGGINGFACEHUB_API_TOKEN")
 
 # Ensure token is set
 if not hf_token:
